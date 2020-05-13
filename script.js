@@ -90,7 +90,7 @@ function animateHands(rels, relPrimers, relSeconds, relTertiaries) {
 initClock()
 
 const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-//document.querySelector('#timezone').innerHTML = timezone
+document.querySelector('#time').innerHTML = 'Calculated from your local time:<br>' + new Date()
 var lat, lon, sunriseStr, sunsetStr
 
 var requestGeocode = new XMLHttpRequest()
