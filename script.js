@@ -3,6 +3,12 @@ var ctx = c.getContext("2d");
 var x = 125
 var y = 125
 var r = 100
+var lat, lon, sunriseStr, sunsetStr
+
+async function initLoc() {
+	const res = await fetch('https://location.services.mozilla.com/v1/geolocate?key=test').then(el => el.json())
+	return [res.location.lat, res.location.lng]
+}
 
 function strToTime(timeStr) {
 	var time = timeStr.split(' ')
@@ -87,24 +93,16 @@ function animateHands(rels, relPrimers, relSeconds, relTertiaries) {
 	ctx.stroke();
 }
 
-initClock()
+async function prepareSunReq() {
+	var loc = await initLoc()
+	lat = loc[0]
+	lon = loc[1]
+	document.querySelector('#local').innerHTML = 'Calculated from your approximate location:<br>' +
+		lat + ', ' + lon
+	makeSunReq()
+}
 
-const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-document.querySelector('#time').innerHTML = 'Calculated from your local time:<br>' + new Date()
-var lat, lon, sunriseStr, sunsetStr
-
-var requestGeocode = new XMLHttpRequest()
-//requestGeocode.open('GET', 'https://geocode.xyz/' + timezone.split('/')[1] + '?json=1', true)
-requestGeocode.open('GET', 'https://nominatim.openstreetmap.org/search?format=json&city=' + timezone.split('/')[1], true)
-
-requestGeocode.onload = function () {
-	var data = JSON.parse(this.response)
-	console.log(data)
-	lat = data[0]['lat']
-	lon = data[0]['lon']
-	//document.querySelector('#loc').innerHTML = lat + '/' + lon
-
-
+function makeSunReq() {
 	var requestSun = new XMLHttpRequest()
 	requestSun.open('GET', 'https://api.sunrise-sunset.org/json?lat=' + lat + '&lng=' + lon, true)
 
@@ -136,4 +134,6 @@ requestGeocode.onload = function () {
 	}
 	requestSun.send()
 }
-requestGeocode.send()
+
+initClock()
+prepareSunReq()
