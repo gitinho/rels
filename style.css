@@ -1,0 +1,38 @@
+body {
+	font-family: ubuntu;
+}
+
+.hidden {
+	display: none;
+}
+
+.container {
+	width: 600px; 
+	margin: auto;
+}
+
+.centerText {
+	text-align: center;
+}
+
+#rels {
+	font-size: 32px;
+}
+
+#local {
+	font-size: x-small;
+}
+
+.link {
+	text-decoration: underline;
+	color: blue;
+	cursor: pointer;
+}
+
+table {
+	text-align: left; margin: auto;
+}
+
+tr > td:first-of-type {
+	padding-right: 10px;
+}

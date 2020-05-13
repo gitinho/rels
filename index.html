@@ -9,10 +9,11 @@
 </head>
 
 <body>
-	<span>EN <a href="pt.html">PT</a></span>
+	<span><a class="en" onclick=changeLangEN()>EN</a> <a class="pt link" onclick=changeLangPT()>PT</a></span>
 	<div class="container">
 		<div class="centerText">
-			<h1>What's the current time in rels?</h1>
+			<h1 class="en">What's the current time in rels?</h1>
+			<h1 class="pt hidden">Quantos reles são?</h1>
 			<p id="rels"></p>
 			<p id="local"></p>
 			<canvas id="clock" width="250px" height="250px"></canvas>
@@ -31,12 +32,22 @@
 				</tr>
 			</table>
 		</div>
-		<h2>What is a rel?</h2>
-		<p>A rel is a subdivision of a day, such that there are 100 rels in a day, or about 4 in an hour. 100 primers is
-			a rel, 100 seconds (rel seconds, not real seconds) is a primer.</p>
-		<p>But more importantly, the sunrise is always at 0 rels (or 100 rels), regardless of timezone or time of the
-			year.
-		</p>
+		<div class="en">
+			<h2>What is a rel?</h2>
+			<p>A rel is a subdivision of a day, such that there are 100 rels in a day, or about 4 in an hour. 100
+				primers is a rel, 100 seconds (rel seconds, not real seconds) is a primer.</p>
+			<p>But more importantly, the sunrise is always at 0 rels (or 100 rels), regardless of timezone or time of
+				the year.
+			</p>
+		</div>
+		<div class="pt hidden">
+			<h2>O que é um rel?</h2>
+			<p>Um rel é uma subdivisão de um dia, de forma a que um dia tenha 100 reles, ou cerca de 4 reles por hora.
+				100 primeiros são 1 rel e 100 segundos (segundos de rel, não segundos reais) são 1 primeiro.</p>
+			<p>Mas o mais importante é que o nascer do sol é sempre aos 0 reles (ou 100 reles), independentemente do
+				fuso horário ou da altura do ano.
+			</p>
+		</div>
 	</div>
 
 	<script src="script.js"></script>

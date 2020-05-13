@@ -3,7 +3,7 @@ var ctx = c.getContext("2d");
 var x = 125
 var y = 125
 var r = 100
-var lat, lon, sunriseStr, sunsetStr, noonStr
+var lat, lon, sunrise, sunset, noon, sunriseAbs, sunsetAbs, noonAbs
 var lang = document.querySelector('html').lang
 var msg = {
 	'pt': {
@@ -24,6 +24,33 @@ var msg = {
 		'sunset': 'Sunset',
 		'noon': 'Solar noon'
 	}
+}
+
+function changeLangEN() {
+	changeLang('en')
+}
+
+function changeLangPT() {
+	changeLang('pt')
+}
+
+function changeLang(langReq) {
+	lang = langReq
+	var elems = document.querySelectorAll('span>a')
+	elems[0].classList.add('link')
+	elems[1].classList.add('link')
+	document.querySelector('a.' + lang).classList.remove('link')
+	elems = document.querySelectorAll('div>.en,div>.pt')
+	elems.forEach(elem => {
+		elem.classList.add('hidden')
+	});
+	elems = document.querySelectorAll('div>.' + lang + '.hidden')
+	elems.forEach(elem => {
+		elem.classList.remove('hidden')
+	});
+	updateTable()
+	document.querySelector('#local').innerHTML = msg[lang]['pos'] + '<br>' +
+		lat + ', ' + lon
 }
 
 async function initLoc() {
@@ -94,6 +121,16 @@ function animateHands(rels, relPrimers, relSeconds, relTertiaries) {
 	ctx.stroke();
 }
 
+function updateTable() {
+	var table = document.querySelector('#sun')
+	table.rows[0].cells[0].innerHTML = msg[lang]['sunrise'] + ':'
+	table.rows[0].cells[1].innerHTML = `00r00p (${toTimeShort(sunrise)})`
+	table.rows[1].cells[0].innerHTML = msg[lang]['sunset'] + ':'
+	table.rows[1].cells[1].innerHTML = `${toRelShort(sunsetAbs - sunriseAbs)} (${toTimeShort(sunset)})`
+	table.rows[2].cells[0].innerHTML = msg[lang]['noon'] + ':'
+	table.rows[2].cells[1].innerHTML = `${toRelShort(noonAbs - sunriseAbs)} (${toTimeShort(noon)})`
+}
+
 async function prepareSunReq() {
 	var loc = await initLoc()
 	lat = loc[0]
@@ -111,20 +148,15 @@ function makeSunReq() {
 		var data = JSON.parse(this.response)
 		console.log(data)
 
-		var sunrise = new Date(data['results']['sunrise'])
-		var sunset = new Date(data['results']['sunset'])
-		var noon = new Date(data['results']['solar_noon'])
-		var sunriseAbs = toTimeAbs(sunrise)
-		var sunsetAbs = toTimeAbs(sunset)
-		var noonAbs = toTimeAbs(noon)
+		sunrise = new Date(data['results']['sunrise'])
+		sunset = new Date(data['results']['sunset'])
+		noon = new Date(data['results']['solar_noon'])
+		sunriseAbs = toTimeAbs(sunrise)
+		sunsetAbs = toTimeAbs(sunset)
+		noonAbs = toTimeAbs(noon)
 
-		var table = document.querySelector('#sun')
-		table.rows[0].cells[0].innerHTML = msg[lang]['sunrise'] + ':'
-		table.rows[0].cells[1].innerHTML = `00r00p (${toTimeShort(sunrise)})`
-		table.rows[1].cells[0].innerHTML = msg[lang]['sunset'] + ':'
-		table.rows[1].cells[1].innerHTML = `${toRelShort(sunsetAbs - sunriseAbs)} (${toTimeShort(sunset)})`
-		table.rows[2].cells[0].innerHTML = msg[lang]['noon'] + ':'
-		table.rows[2].cells[1].innerHTML = `${toRelShort(noonAbs - sunriseAbs)} (${toTimeShort(noon)})`
+		updateTable()
+
 		setInterval(function () {
 			var now = new Date()
 			var nowAbs = toTimeAbs(now)
