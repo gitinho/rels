@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title></title>
+</head>
+
+<body>
+  <input type="range" min="0.0" max="1.0" value="0.0" step="0.01" style="width: 100%">
+  <p id="rel"></p>
+  <p id="color"></p>
+  <script>
+    var colors = {
+      'sunrise': [255, 200, 160],
+      'noon': [100, 180, 250],
+      'sunset': [200, 50, 100],
+      'midnight': [10, 15, 45]
+    }
+
+    function calcFactor(factor, min, max) {
+      var diff = max - min
+      factorRectified = factor - min
+      factorRectified /= diff
+      return factorRectified
+    }
+
+    function interpolateColor(color1, color2, factor) {
+      console.log(color1, color2, factor)
+      if (arguments.length < 3)
+        factor = 0.5
+      var result = []
+      for (var i = 0; i < 3; i++) {
+        result.push(factor * color2[i] + (1.0 - factor) * color1[i])
+      }
+      console.log(result)
+      return result
+    }
+
+    document.querySelector('input').oninput = function () {
+      var nowRel = this.value;
+      document.querySelector('#rel').innerHTML = nowRel
+      if (nowRel < 0.1) {
+        var color = interpolateColor(colors['sunrise'], colors['noon'], calcFactor(nowRel, 0.0, 0.1))
+      } else if (nowRel < 0.4) {
+        var color = colors['noon']
+      } else if (nowRel < 0.5) {
+        var color = interpolateColor(colors['noon'], colors['sunset'], calcFactor(nowRel, 0.4, 0.5))
+      } else if (nowRel < 0.6) {
+        var color = interpolateColor(colors['sunset'], colors['midnight'], calcFactor(nowRel, 0.5, 0.6))
+      } else if (nowRel < 0.9) {
+        var color = colors['midnight']
+      } else {
+        var color = interpolateColor(colors['midnight'], colors['sunrise'], calcFactor(nowRel, 0.9, 1.0))
+      }
+      document.querySelector('#color').innerHTML = (color)
+      document.querySelector('body').style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`
+    } 
+  </script>
+</body>
+
+</html>

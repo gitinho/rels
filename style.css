@@ -29,6 +29,11 @@ body {
 	cursor: pointer;
 }
 
+span {
+	padding: 2px;
+	background-color: white;
+}
+
 table {
 	text-align: left; margin: auto;
 }

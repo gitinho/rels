@@ -26,11 +26,38 @@ var msg = {
 	}
 }
 
+var colors = {
+	'sunrise': [255, 200, 160],
+	'noon': [100, 180, 250],
+	'sunset': [200, 50, 100],
+	'midnight': [10, 15, 45]
+  }
+
+function calcFactor(factor, min, max) {
+	var diff = max - min
+	factorRectified = factor - min
+	factorRectified /= diff
+	return factorRectified
+}
+
+function interpolateColor(color1, color2, factor) {
+	console.log(color1, color2, factor)
+	if (arguments.length < 3)
+		factor = 0.5
+	var result = color1.slice()
+	for (var i = 0; i < 3; i++) {
+		result[i] = Math.round(result[i] + factor * (color2[i] - color1[i]))
+	}
+	return result
+}
+
 function changeLangEN() {
+	document.querySelector('title').innerHTML = "What's the time in rels?"
 	changeLang('en')
 }
 
 function changeLangPT() {
+	document.querySelector('title').innerHTML = "Quantos reles são?"
 	changeLang('pt')
 }
 
@@ -157,16 +184,41 @@ function makeSunReq() {
 
 		updateTable()
 
+		var relsPrev = 0
 		setInterval(function () {
 			var now = new Date()
 			var nowAbs = toTimeAbs(now)
 			var nowRel = nowAbs - sunriseAbs
 			if (nowRel < 0)
 				nowRel += 1
+
 			rels = Math.floor(nowRel * 100)
 			relPrimers = Math.floor(nowRel * 10000) % 100
 			relSeconds = Math.floor(nowRel * 1000000) % 100
 			relTertiaries = Math.floor(nowRel * 100000000) % 100
+
+			if (rels != relsPrev) {
+				console.log(nowRel)
+				if (nowRel < 0.1) {
+					var color = interpolateColor(colors['sunrise'], colors['noon'], calcFactor(nowRel, 0.0, 0.1))
+				} else if (nowRel < 0.4) {
+					var color = colors['noon']
+				} else if (nowRel < 0.5) {
+					var color = interpolateColor(colors['noon'], colors['sunset'], calcFactor(nowRel, 0.4, 0.5))
+				} else if (nowRel < 0.6) {
+					var color = interpolateColor(colors['sunset'], colors['midnight'], calcFactor(nowRel, 0.5, 0.6))
+				} else if (nowRel < 0.9) {
+					document.querySelector('body').style.color = 'white'
+					var color = colors['midnight']
+				} else {
+					document.querySelector('body').style.color = 'black'
+					var color = interpolateColor(colors['midnight'], colors['sunrise'], calcFactor(nowRel, 0.9, 1.0))
+				}
+				console.log(color)
+				document.querySelector('body').style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`
+				relsPrev = rels
+			}
+
 			animateHands(rels, relPrimers, relSeconds, relTertiaries)
 			document.querySelector('#rels').innerHTML = `${("00" + rels).slice(-2)} ${msg[lang]['r']}, ${("00" + relPrimers).slice(-2)} ${msg[lang]['p']}, ${("00" + relSeconds).slice(-2)} ${msg[lang]['s']}`
 			//console.log(nowRel)
