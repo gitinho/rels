@@ -1,25 +1,39 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="en">
 
 <head>
 	<meta charset="utf-8">
 	<title>What's the time in rels?</title>
 	<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;700&display=swap" rel="stylesheet">
+	<link href="style.css" rel="stylesheet">
 </head>
 
-<body style="font-family: ubuntu">
-	<div style="width: 600px; margin: auto;">
-		<div style="text-align: center;">
+<body>
+	<span>EN <a href="pt.html">PT</a></span>
+	<div class="container">
+		<div class="centerText">
 			<h1>What's the current time in rels?</h1>
-			<p id="rels" style="font-size: 32px;"></p>
-			<p id="local" style="font-size: x-small;"></p>
+			<p id="rels"></p>
+			<p id="local"></p>
 			<canvas id="clock" width="250px" height="250px"></canvas>
-			<p id="sun">Sunrise: <br>Sunset: </p>
+			<table id="sun">
+				<tr>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td></td>
+				</tr>
+			</table>
 		</div>
 		<h2>What is a rel?</h2>
 		<p>A rel is a subdivision of a day, such that there are 100 rels in a day, or about 4 in an hour. 100 primers is
-			a
-			rel, 100 seconds (rel-seconds) is a primer.</p>
+			a rel, 100 seconds (rel seconds, not real seconds) is a primer.</p>
 		<p>But more importantly, the sunrise is always at 0 rels (or 100 rels), regardless of timezone or time of the
 			year.
 		</p>

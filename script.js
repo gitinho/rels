@@ -3,31 +3,32 @@ var ctx = c.getContext("2d");
 var x = 125
 var y = 125
 var r = 100
-var lat, lon, sunriseStr, sunsetStr
+var lat, lon, sunriseStr, sunsetStr, noonStr
+var lang = document.querySelector('html').lang
+var msg = {
+	'pt': {
+		'pos': 'Calculado a partir da sua localização aproximada:',
+		'r': 'reles',
+		'p': 'primeiros',
+		's': 'segundos',
+		'sunrise': 'Nascer do sol',
+		'sunset': 'Pôr do sol',
+		'noon': 'Meio-dia solar'
+	},
+	'en': {
+		'pos': 'Calculated from your approximate location:',
+		'r': 'rels',
+		'p': 'primers',
+		's': 'seconds',
+		'sunrise': 'Sunrise',
+		'sunset': 'Sunset',
+		'noon': 'Solar noon'
+	}
+}
 
 async function initLoc() {
 	const res = await fetch('https://location.services.mozilla.com/v1/geolocate?key=test').then(el => el.json())
 	return [res.location.lat, res.location.lng]
-}
-
-function strToTime(timeStr) {
-	var time = timeStr.split(' ')
-	var timeArr = time[0].split(':')
-	var h = timeArr[0]
-	var m = timeArr[1]
-	var s = timeArr[2]
-	var h12 = time[1]
-
-	if (h12 == 'PM') {
-		h += 12
-	}
-
-	var timeRet = new Date()
-	timeRet.setHours(h)
-	timeRet.setMinutes(m)
-	timeRet.setSeconds(s)
-
-	return timeRet
 }
 
 function toTimeAbs(time) {
@@ -35,11 +36,11 @@ function toTimeAbs(time) {
 }
 
 function toRelShort(timeAbs) {
-	return Math.floor(timeAbs * 100) + 'r' + Math.floor(timeAbs * 10000) % 100 + 'p'
+	return ('00' + Math.floor(timeAbs * 100)).slice(-2) + 'r' + ('00' + Math.floor(timeAbs * 10000) % 100).slice(-2) + 'p'
 }
 
 function toTimeShort(time) {
-	return time.getHours() + 'h' + time.getMinutes() + 'm'
+	return ('00' + time.getHours()).slice(-2) + 'h' + ('00' + time.getMinutes()).slice(-2) + 'm'
 }
 
 function initClock() {
@@ -97,26 +98,33 @@ async function prepareSunReq() {
 	var loc = await initLoc()
 	lat = loc[0]
 	lon = loc[1]
-	document.querySelector('#local').innerHTML = 'Calculated from your approximate location:<br>' +
+	document.querySelector('#local').innerHTML = msg[lang]['pos'] + '<br>' +
 		lat + ', ' + lon
 	makeSunReq()
 }
 
 function makeSunReq() {
 	var requestSun = new XMLHttpRequest()
-	requestSun.open('GET', 'https://api.sunrise-sunset.org/json?lat=' + lat + '&lng=' + lon, true)
+	requestSun.open('GET', 'https://api.sunrise-sunset.org/json?formatted=0&lat=' + lat + '&lng=' + lon, true)
 
 	requestSun.onload = function () {
 		var data = JSON.parse(this.response)
-		sunriseStr = data['results']['sunrise']
-		sunsetStr = data['results']['sunset']
 		console.log(data)
 
-		var sunrise = strToTime(sunriseStr)
+		var sunrise = new Date(data['results']['sunrise'])
+		var sunset = new Date(data['results']['sunset'])
+		var noon = new Date(data['results']['solar_noon'])
 		var sunriseAbs = toTimeAbs(sunrise)
-		var sunset = strToTime(sunsetStr)
 		var sunsetAbs = toTimeAbs(sunset)
-		document.querySelector('#sun').innerHTML = 'Sunrise: 00r00p (' + toTimeShort(sunrise) + ')<br>Sunset: ' + toRelShort(sunsetAbs - sunriseAbs) + ' (' + toTimeShort(sunset) + ')'
+		var noonAbs = toTimeAbs(noon)
+
+		var table = document.querySelector('#sun')
+		table.rows[0].cells[0].innerHTML = msg[lang]['sunrise'] + ':'
+		table.rows[0].cells[1].innerHTML = `00r00p (${toTimeShort(sunrise)})`
+		table.rows[1].cells[0].innerHTML = msg[lang]['sunset'] + ':'
+		table.rows[1].cells[1].innerHTML = `${toRelShort(sunsetAbs - sunriseAbs)} (${toTimeShort(sunset)})`
+		table.rows[2].cells[0].innerHTML = msg[lang]['noon'] + ':'
+		table.rows[2].cells[1].innerHTML = `${toRelShort(noonAbs - sunriseAbs)} (${toTimeShort(noon)})`
 		setInterval(function () {
 			var now = new Date()
 			var nowAbs = toTimeAbs(now)
@@ -128,7 +136,7 @@ function makeSunReq() {
 			relSeconds = Math.floor(nowRel * 1000000) % 100
 			relTertiaries = Math.floor(nowRel * 100000000) % 100
 			animateHands(rels, relPrimers, relSeconds, relTertiaries)
-			document.querySelector('#rels').innerHTML = rels + ' rels, ' + relPrimers + ' primers, ' + relSeconds + ' seconds'
+			document.querySelector('#rels').innerHTML = `${("00" + rels).slice(-2)} ${msg[lang]['r']}, ${("00" + relPrimers).slice(-2)} ${msg[lang]['p']}, ${("00" + relSeconds).slice(-2)} ${msg[lang]['s']}`
 			//console.log(nowRel)
 		}, 10);
 	}
