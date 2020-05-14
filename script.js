@@ -27,11 +27,11 @@ var msg = {
 }
 
 var colors = {
-	'sunrise': [255, 200, 160],
+	'sunrise': [255, 240, 115],
 	'noon': [100, 180, 250],
-	'sunset': [200, 50, 100],
+	'sunset': [255, 140, 40],
 	'midnight': [10, 15, 45]
-  }
+}
 
 function calcFactor(factor, min, max) {
 	var diff = max - min

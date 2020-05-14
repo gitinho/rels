@@ -7,14 +7,14 @@
 </head>
 
 <body>
-  <input type="range" min="0.0" max="1.0" value="0.0" step="0.01" style="width: 100%">
+  <input type="range" min="0.0" max="1.0" value="0.0" step="0.001" style="width: 100%">
   <p id="rel"></p>
   <p id="color"></p>
   <script>
     var colors = {
-      'sunrise': [255, 200, 160],
+      'sunrise': [255, 240, 115],
       'noon': [100, 180, 250],
-      'sunset': [200, 50, 100],
+      'sunset': [255, 140, 40],
       'midnight': [10, 15, 45]
     }
 
@@ -55,7 +55,8 @@
       }
       document.querySelector('#color').innerHTML = (color)
       document.querySelector('body').style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`
-    } 
+    }
+    document.querySelector('body').style.backgroundColor = `rgb(${colors['sunrise'][0]}, ${colors['sunrise'][1]}, ${colors['sunrise'][2]})`
   </script>
 </body>
 
