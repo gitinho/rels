@@ -32,6 +32,7 @@ var colors = {
 	'sunset': [255, 140, 40],
 	'midnight': [10, 15, 45]
 }
+var textColor = 'black'
 
 function calcFactor(factor, min, max) {
 	var diff = max - min
@@ -98,6 +99,9 @@ function toTimeShort(time) {
 }
 
 function initClock() {
+	ctx.clearRect(0, 0, c.width, c.height)
+	ctx.strokeStyle = textColor;
+	ctx.fillStyle = textColor;
 	ctx.font = "14px Ubuntu";
 	ctx.beginPath();
 	ctx.arc(x, y, r, 0, 2 * Math.PI);
@@ -122,6 +126,7 @@ function initClock() {
 }
 
 function animateHands(rels, relPrimers, relSeconds, relTertiaries) {
+	ctx.strokeStyle = textColor;
 	ctx.beginPath();
 	ctx.arc(x, y, 0.89 * r, 0, 2 * Math.PI);
 	ctx.clip();
@@ -143,9 +148,15 @@ function animateHands(rels, relPrimers, relSeconds, relTertiaries) {
 	ctx.stroke();
 	ctx.beginPath();
 	ctx.lineWidth = 4
-	ctx.strokeStyle = "#000000";
+	ctx.strokeStyle = textColor;
 	ctx.arc(x, y, 0.02 * r, 0, 2 * Math.PI);
 	ctx.stroke();
+}
+
+function updateColor(color) {
+	textColor = color
+	initClock()
+	document.querySelector('body').style.color = textColor
 }
 
 function updateTable() {
@@ -208,10 +219,10 @@ function makeSunReq() {
 				} else if (nowRel < 0.6) {
 					var color = interpolateColor(colors['sunset'], colors['midnight'], calcFactor(nowRel, 0.5, 0.6))
 				} else if (nowRel < 0.9) {
-					document.querySelector('body').style.color = 'white'
+					updateColor('white')
 					var color = colors['midnight']
 				} else {
-					document.querySelector('body').style.color = 'black'
+					updateColor('black')
 					var color = interpolateColor(colors['midnight'], colors['sunrise'], calcFactor(nowRel, 0.9, 1.0))
 				}
 				console.log(color)
